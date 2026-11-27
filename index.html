@@ -76,6 +76,14 @@ a:hover{color:var(--accent)}
 .story-close:hover{color:var(--accent)}
 .nav a.active{background:var(--ink);color:var(--bg)}
 
+/* Indicateur « Horaire et infos ↓ » (mobile seulement) */
+.more{display:none;position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:3;align-items:center;gap:6px;
+  background:var(--bg);color:var(--ink);text-decoration:none;font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  padding:8px 14px;white-space:nowrap;border-radius:99px;box-shadow:0 2px 10px rgba(0,0,0,.18);transition:opacity .3s;animation:nudge 2.4s ease-in-out infinite}
+.more.hide{opacity:0;pointer-events:none}
+@keyframes nudge{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,4px)}}
+@media (prefers-reduced-motion:reduce){.more{animation:none}}
+
 /* =========================================================
    COLONNE DE DROITE — haut
    ========================================================= */
@@ -128,7 +136,9 @@ a:hover{color:var(--accent)}
    ========================================================= */
 @media (max-width:900px){
   .page{height:auto;grid-template-columns:1fr;grid-template-areas:"head" "photo" "body";row-gap:0}
-  .photo{aspect-ratio:4/5;margin-top:var(--pad)}
+  /* photo raccourcie pour qu'on devine la suite sous la photo */
+  .photo{margin-top:var(--pad);height:max(260px, calc(100svh - 380px));max-height:125vw}
+  .more{display:flex}
   .logo img{height:96px}
   .nav a{font-size:14px}
   .body{padding-top:18px}
@@ -144,7 +154,8 @@ a:hover{color:var(--accent)}
 <main class="page">
 
   <!-- ============ PHOTO (gauche) ============ -->
-  <div class="photo" id="photo" aria-hidden="true">
+  <div class="photo" id="photo">
+    <a class="more" id="more" href="#infos" data-i18n="more">Horaire et infos ↓</a>
     <span class="ph-label" data-i18n="ph">Photo — images/photo-1.jpg</span>
   </div>
 
@@ -174,7 +185,7 @@ a:hover{color:var(--accent)}
   <section class="body">
     <p class="about" data-i18n="about">Il n'y a rien de plus frais qu'un repas cuisiné à l'endroit même où les ingrédients ont été cultivés. Chez 40 Arpents, nous proposons une réelle expérience de la ferme à l'assiette. Menu à l'ardoise conçu quelques jours à l'avance selon les produits disponibles à la ferme. Magnifique sélection de vins natures en importation privée, cidres et bières en accord avec nos valeurs. Ambiance festive!</p>
 
-    <div class="addr"><a class="js-map js-address" href="#" target="_blank" rel="noopener"></a></div>
+    <div class="addr" id="infos"><a class="js-map js-address" href="#" target="_blank" rel="noopener"></a></div>
 
     <div class="info">
       <div class="hours">
@@ -221,7 +232,7 @@ CONFIG.mapsUrl = "https://www.google.com/maps/place/?q=place_id:" + CONFIG.googl
    ========================================================= */
 const T = {
   fr:{
-    n0:"Notre projet", n1:"Dormir à la ferme", n2:"Itinéraire", book:"Réserver une table", story_h:"Notre projet",
+    more:"Horaire et infos ↓", n0:"Notre projet", n1:"Dormir à la ferme", n2:"Itinéraire", book:"Réserver une table", story_h:"Notre projet",
     /* ↓ Texte provisoire — remplacez par votre histoire (un paragraphe par ligne du tableau) */
     story:[
       "40 Arpents n'est pas seulement un restaurant, c'est un acte de résistance contre l'agriculture industrielle. Un projet qui nourrit le beau, la communauté, la vie. On y vient pour la vérité de l'assiette et la cohérence du projet.",
@@ -239,7 +250,7 @@ const T = {
     email:"Courriel", phone:"Téléphone"
   },
   en:{
-    n0:"Our project", n1:"Stay at the farm", n2:"Directions", book:"Book a table", story_h:"Our project",
+    more:"Hours & info ↓", n0:"Our project", n1:"Stay at the farm", n2:"Directions", book:"Book a table", story_h:"Our project",
     story:[
       "40 Arpents isn't just a restaurant — it's an act of resistance against industrial agriculture. A project that nurtures beauty, community and life. People come for the honesty of the plate and the coherence of the project.",
       "Respect for the environment isn't a marketing pitch; it's a necessity for flavour and for the survival of our farm.",
@@ -389,6 +400,10 @@ async function loadGoogle(){
     if(j && j.days && Object.keys(j.days).length===7){ H={days:j.days}; renderHours(); }
   }catch(e){ /* pas de hours.json : horaire de secours */ }
 }
+
+/* Indicateur mobile : défilement doux vers les infos, disparaît une fois qu'on descend */
+$("#more").addEventListener("click",e=>{e.preventDefault(); $("#infos").scrollIntoView({behavior:"smooth",block:"start"});});
+addEventListener("scroll",()=>$("#more").classList.toggle("hide",scrollY>60),{passive:true});
 
 $("#langBtn").addEventListener("click",()=>setLang(lang==="fr"?"en":"fr"));
 setLang(lang);
