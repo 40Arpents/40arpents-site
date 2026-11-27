@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>40 Arpents — Ferme-buvette</title>
+<meta name="description" content="40 Arpents, ferme-buvette familiale à Saint-Onésime-d'Ixworth, au Kamouraska.">
+<link rel="icon" href="images/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Oswald:wght@500&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   40 ARPENTS — couleurs et polices (faciles à ajuster)
+   ========================================================= */
+:root{
+  --bg:#ebe5d7;        /* fond avoine */
+  --ink:#1b1b19;       /* texte, filets, logo */
+  --accent:#8c3a1d;    /* rouille : bouton Réserver, liens au survol */
+  --on-accent:#f6efe3;
+  --mono:"DM Mono", ui-monospace, monospace;
+  --cond:"Oswald", "Arial Narrow", sans-serif;
+  --pad:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--mono);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{color:var(--accent)}
+
+/* =========================================================
+   MISE EN PAGE — ordinateur : tout tient dans l'écran
+   ========================================================= */
+.page{
+  height:100vh;height:100svh;padding:var(--pad);
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;
+  grid-template-areas:"photo head" "photo body";column-gap:var(--pad);
+}
+.photo{grid-area:photo}
+.head{grid-area:head}
+.body{grid-area:body}
+
+/* Écrans peu hauts : on permet le défilement plutôt que d'écraser */
+@media (max-height:700px) and (min-width:901px){ .page{height:auto;min-height:100vh} .photo{min-height:660px} }
+
+/* =========================================================
+   PHOTO (diaporama si plusieurs images)
+   ========================================================= */
+.photo{position:relative;overflow:hidden;background:
+  repeating-linear-gradient(135deg,rgba(27,27,25,.07) 0 1px,transparent 1px 12px),#ddd5c4}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.4s ease}
+.photo img.on{opacity:1}
+.photo .ph-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.55}
+.photo.has-img .ph-label{display:none}
+
+/* =========================================================
+   NOTRE HISTOIRE — panneau
+   ========================================================= */
+.story{position:relative;grid-area:photo;z-index:5;background:var(--bg);border:1px solid var(--ink);padding:clamp(28px,5vw,64px);overflow-y:auto;
+  opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .35s,transform .35s,visibility .35s}
+.story.open{opacity:1;visibility:visible;transform:none}
+.story h2{font:500 clamp(28px,3.2vw,44px)/1 var(--cond);text-transform:uppercase;letter-spacing:.02em;margin-bottom:28px}
+.story-text p{font-size:clamp(15px,1.25vw,17px);line-height:1.6;margin-bottom:1.1em;max-width:52ch}
+.story-close{position:absolute;top:14px;right:18px;background:none;border:0;font:300 34px/1 var(--mono);color:var(--ink);cursor:pointer}
+.story-close:hover{color:var(--accent)}
+.nav a.active{background:var(--ink);color:var(--bg)}
+
+/* =========================================================
+   COLONNE DE DROITE — haut
+   ========================================================= */
+.head{position:relative;display:flex;flex-direction:column}
+.lang{position:absolute;top:0;right:0;background:none;border:0;font:500 11px var(--mono);letter-spacing:.06em;color:var(--ink);cursor:pointer;padding:2px 0 6px 10px}
+.lang:hover{color:var(--accent)}
+.logo{display:flex;justify-content:center;padding:4px 0 18px}
+.logo img{height:clamp(78px,12.5vh,130px);width:auto}
+
+.nav{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-top:4px}
+.nav a{line-height:1.1 !important;display:flex;align-items:center;justify-content:center;text-align:center;height:clamp(44px,6.4vh,58px);font:500 15px/1 var(--cond);text-transform:uppercase;letter-spacing:.03em;text-decoration:none;padding:0 8px}
+.nav a + a{border-left:1px solid var(--ink)}
+.nav a:hover{background:var(--ink);color:var(--bg)}
+
+.book{display:flex;align-items:center;justify-content:center;height:clamp(48px,7vh,64px);margin-top:6px;border-bottom:1px solid var(--ink);
+  background:var(--accent);color:var(--on-accent);text-decoration:none;font:500 17px/1 var(--cond);text-transform:uppercase;letter-spacing:.04em;transition:background .2s}
+.book:hover{background:var(--ink);color:var(--bg)}
+.book-wrap{padding-bottom:6px;border-bottom:1px solid var(--ink)}
+.book-wrap .book{border-bottom:0}
+
+/* =========================================================
+   COLONNE DE DROITE — bas
+   ========================================================= */
+.body{display:flex;flex-direction:column;justify-content:flex-end;padding-top:24px}
+.about{font-size:clamp(15px,1.45vw,19px);line-height:1.38;margin-bottom:16px;max-width:46ch}
+.addr{border-top:1px solid var(--ink);padding:8px 0 10px;font-size:13px}
+.addr a{text-decoration:none}
+.info{display:grid;grid-template-columns:1.4fr 1fr auto;gap:18px;font-size:13px;align-items:end}
+.info ul{list-style:none}
+.status{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.status i{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
+.status.open i{background:#4c7a37}
+#hours > div{display:flex;flex-wrap:wrap;column-gap:10px}
+.hours .d{min-width:0}
+.hours .note{display:block}
+.hours .note{opacity:.6;margin-top:2px}
+.links a{text-decoration:none}
+.links a:hover{text-decoration:underline}
+.copy{opacity:.6;white-space:nowrap}
+
+/* =========================================================
+   MOBILE / TABLETTE : on empile, le défilement est normal
+   ========================================================= */
+@media (max-width:900px){
+  .page{height:auto;grid-template-columns:1fr;grid-template-areas:"head" "photo" "body";row-gap:0}
+  .photo{aspect-ratio:4/5;margin-top:var(--pad)}
+  .logo img{height:96px}
+  .nav a{font-size:14px}
+  .body{padding-top:18px}
+  .about{font-size:15px}
+  .info{grid-template-columns:1.6fr 1fr}
+  .copy{grid-column:1/-1}
+  .story{position:fixed;inset:0;border:0;padding:64px 24px 40px}
+  .nav a{font-size:13px}
+}
+</style>
+</head>
+<body>
+<main class="page">
+
+  <!-- ============ PHOTO (gauche) ============ -->
+  <div class="photo" id="photo" aria-hidden="true">
+    <span class="ph-label" data-i18n="ph">Photo — images/photo-1.jpg</span>
+  </div>
+
+  <!-- ============ NOTRE HISTOIRE (s'ouvre par-dessus la photo) ============ -->
+  <article class="story" id="story" aria-hidden="true" tabindex="-1">
+    <button class="story-close" id="storyClose" type="button" aria-label="Fermer">×</button>
+    <h2 data-i18n="story_h">Notre histoire</h2>
+    <div class="story-text" id="storyText"></div>
+  </article>
+
+  <!-- ============ HAUT (droite) ============ -->
+  <header class="head">
+    <button class="lang" id="langBtn" type="button">EN</button>
+    <div class="logo"><img src="images/logo.png" alt="40 Arpents"></div>
+
+    <nav class="nav">
+      <a href="#histoire" id="storyBtn" data-i18n="n0">Notre histoire</a>
+      <a class="js-airbnb" href="#" target="_blank" rel="noopener" data-i18n="n1">Dormir sur la ferme · Airbnb</a>
+      <a class="js-map" href="#" target="_blank" rel="noopener" data-i18n="n2">Itinéraire</a>
+    </nav>
+    <div class="book-wrap">
+      <a class="book js-libro" href="#" target="_blank" rel="noopener" data-i18n="book">Réserver une table</a>
+    </div>
+  </header>
+
+  <!-- ============ BAS (droite) ============ -->
+  <section class="body">
+    <p class="about" data-i18n="about">Il n'y a rien de plus frais qu'un repas cuisiné à l'endroit même où les ingrédients ont été cultivés. Chez 40 Arpents, nous proposons une réelle expérience de la ferme à l'assiette. Menu à l'ardoise conçu quelques jours à l'avance selon les produits disponibles à la ferme. Magnifique sélection de vins natures en importation privée, cidres et bières en accord avec nos valeurs. Ambiance festive!</p>
+
+    <div class="addr"><a class="js-map js-address" href="#" target="_blank" rel="noopener"></a></div>
+
+    <div class="info">
+      <div class="hours">
+        <div class="status" id="status"><i></i><span></span></div>
+        <div id="hours"></div>
+      </div>
+      <ul class="links" id="links"></ul>
+      <span class="copy">© 40 Arpents</span>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* =========================================================
+   CONFIGURATION — la seule partie à modifier
+   ========================================================= */
+const CONFIG = {
+  libroUrl:  "https://booking.libroreserve.com/26a6a9bb6436750/QC017406875261/seat",
+  airbnbUrl: "https://www.airbnb.ca/rooms/1391317833143442045",
+  instagram: "https://www.instagram.com/40arpents",
+  facebook:  "https://www.facebook.com/40arpents",
+  email:     "info@40arpents.com",
+  phone:     "",                            // laissez "" pour masquer
+  address:   "49, 4e Rang Ouest, Saint-Onésime-d'Ixworth (QC)  G0R 3W0",
+
+  /* Photos de gauche : une seule = image fixe; plusieurs = diaporama en fondu */
+  photos: ["images/photo-1.jpg","images/photo-2.jpg","images/photo-3.jpg"],
+  slideSeconds: 6,
+
+  /* --- Synchronisation Google Business ---
+     L'horaire est lu dans hours.json, que GitHub met à jour chaque jour à midi
+     (voir .github/workflows/hours.yml). La clé API n'est jamais dans la page. */
+  googlePlaceId: "ChIJ33J9HarpvkwRt7bYTrXwYZE",
+
+  /* Horaire de secours si Google ne répond pas (copié de votre fiche Google le 23 nov. 2026).
+     0 = dimanche … 6 = samedi; null = fermé; plusieurs services : [["11:30","14:00"],["17:00","22:00"]] */
+  fallbackHours: { 0:null, 1:null, 2:null, 3:null, 4:null, 5:null, 6:[["16:00","20:00"]] }
+};
+CONFIG.mapsUrl = "https://www.google.com/maps/place/?q=place_id:" + CONFIG.googlePlaceId;
+
+/* =========================================================
+   TEXTES FR / EN
+   ========================================================= */
+const T = {
+  fr:{
+    n0:"Notre histoire", n1:"Dormir sur la ferme · Airbnb", n2:"Itinéraire", book:"Réserver une table", story_h:"Notre histoire",
+    /* ↓ Texte provisoire — remplacez par votre histoire (un paragraphe par ligne du tableau) */
+    story:[
+      "40 Arpents, c'est d'abord une terre familiale au cœur du Kamouraska, entre les champs et le 4e Rang.",
+      "On y cultive, on y élève et on y cuisine. Ce qui pousse ici et chez nos voisins producteurs se retrouve directement dans l'assiette, au rythme des saisons.",
+      "La ferme-buvette est née de l'envie de partager tout ça autour d'une même table : une vingtaine de places, une cuisine simple et généreuse, et une carte des vins choisie bouteille par bouteille.",
+      "Pour celles et ceux qui veulent prolonger la soirée, le gîte sur place permet de dormir à la ferme et de se réveiller dans le calme de la campagne."
+    ],
+    about:"Il n'y a rien de plus frais qu'un repas cuisiné à l'endroit même où les ingrédients ont été cultivés. Chez 40 Arpents, nous proposons une réelle expérience de la ferme à l'assiette. Menu à l'ardoise conçu quelques jours à l'avance selon les produits disponibles à la ferme. Magnifique sélection de vins natures en importation privée, cidres et bières en accord avec nos valeurs. Ambiance festive!",
+    ph:"Photo — images/photo-1.jpg",
+    days:["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"],
+    to:" au ", and:" et ", plus:" et ",
+    open:"Ouvert maintenant", closesAt:"ferme à", closed:"Fermé", opensAt:"ouvre", at:"à", today:"aujourd'hui", tomorrow:"demain",
+    otherDays:"Fermé les autres jours", noHours:"Horaire à venir",
+    email:"Courriel", phone:"Téléphone"
+  },
+  en:{
+    n0:"Our story", n1:"Stay at the farm · Airbnb", n2:"Directions", book:"Book a table", story_h:"Our story",
+    story:[
+      "40 Arpents is first and foremost a family farm in the heart of Kamouraska, between the fields and the 4e Rang.",
+      "We grow, raise and cook here. What comes from our land and from neighbouring growers goes straight to the plate, following the seasons.",
+      "The farm buvette grew out of a wish to share all of this around one table: about twenty seats, simple and generous cooking, and a wine list chosen bottle by bottle.",
+      "For those who want to make a night of it, our on-site guesthouse lets you sleep at the farm and wake up to the quiet of the countryside."
+    ],
+    about:"There's nothing fresher than a meal cooked right where its ingredients were grown. At 40 Arpents, we offer a true farm-to-table experience. Our chalkboard menu is written a few days ahead, based on what the farm has to offer. A beautiful selection of private-import natural wines, plus ciders and beers that reflect our values. Festive atmosphere!",
+    ph:"Photo — images/photo-1.jpg",
+    days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+    to:" to ", and:" & ", plus:" & ",
+    open:"Open now", closesAt:"closes at", closed:"Closed", opensAt:"opens", at:"at", today:"today", tomorrow:"tomorrow",
+    otherDays:"Closed other days", noHours:"Hours coming soon",
+    email:"Email", phone:"Phone"
+  }
+};
+
+/* =========================================================
+   LOGIQUE (pas besoin de modifier)
+   ========================================================= */
+let lang="fr";
+try{ lang = localStorage.getItem("40a-lang") || ((navigator.language||"fr").startsWith("en")?"en":"fr"); }catch(e){}
+let H = { days:CONFIG.fallbackHours, openNow:null };
+const $ = s=>document.querySelector(s);
+const cap = s=>s.charAt(0).toUpperCase()+s.slice(1);
+const toMin = t=>{const [h,m]=t.split(":").map(Number);return h*60+m;};
+
+function fmt(t){
+  let [h,m]=t.split(":").map(Number);
+  if(lang==="fr") return h+" h"+(m?String(m).padStart(2,"0"):"");
+  const ap=h>=12&&h<24?"pm":"am", h12=((h+11)%12)+1;
+  return h12+(m?":"+String(m).padStart(2,"0"):"")+" "+ap;
+}
+const slot = s=>s.map(([o,c])=>fmt(o)+" – "+fmt(c)).join(T[lang].plus);
+
+/* Regroupe les jours consécutifs ayant le même horaire (ex. « Mercredi au samedi ») */
+function grouped(){
+  const t=T[lang], order=[1,2,3,4,5,6,0], out=[];
+  order.forEach(d=>{
+    const s=H.days[d]; if(!s||!s.length) return;
+    const key=JSON.stringify(s), last=out[out.length-1];
+    if(last && last.key===key && order.indexOf(last.end)===order.indexOf(d)-1){ last.end=d; last.n++; }
+    else out.push({key,start:d,end:d,n:1,s});
+  });
+  return out.map(g=>{
+    const a=t.days[g.start], b=t.days[g.end];
+    const label = g.n===1 ? cap(a) : g.n===2 ? cap(a)+t.and+b : cap(a)+t.to+b;
+    return {label, hours:slot(g.s)};
+  });
+}
+
+function statusText(){
+  const t=T[lang], now=new Date(), d=now.getDay(), cur=now.getHours()*60+now.getMinutes();
+  // ouvert maintenant ?
+  for(const [o,c] of (H.days[d]||[])){
+    let a=toMin(o), b=toMin(c); if(b<=a) b+=1440;
+    if(cur>=a && cur<b) return {open:true, txt:`${t.open} · ${t.closesAt} ${fmt(c)}`};
+  }
+  // prochaine ouverture
+  for(let i=0;i<8;i++){
+    const dd=(d+i)%7;
+    for(const [o] of (H.days[dd]||[])){
+      if(i===0 && toMin(o)<=cur) continue;
+      const when = i===0?t.today : i===1?t.tomorrow : t.days[dd];
+      return {open:false, txt:`${t.closed} · ${t.opensAt} ${when} ${t.at} ${fmt(o)}`};
+    }
+  }
+  return {open:false, txt:t.closed};
+}
+
+function renderHours(){
+  const t=T[lang], g=grouped();
+  $("#hours").innerHTML = g.length
+    ? g.map(x=>`<div><span class="d">${x.label}</span><span>${x.hours}</span></div>`).join("") +
+      (Object.values(H.days).filter(v=>v&&v.length).length<7 ? `<div class="note">${t.otherDays}</div>`:"")
+    : `<div>${t.noHours}</div>`;
+  const st=statusText(), el=$("#status");
+  el.className="status"+(st.open?" open":""); el.querySelector("span").textContent=st.txt;
+}
+
+function renderLinks(){
+  const t=T[lang], L=[];
+  if(CONFIG.email) L.push(`<li><a href="mailto:${CONFIG.email}">${t.email}</a></li>`);
+  if(CONFIG.phone) L.push(`<li><a href="tel:${CONFIG.phone.replace(/\D/g,"")}">${CONFIG.phone}</a></li>`);
+  if(CONFIG.instagram) L.push(`<li><a href="${CONFIG.instagram}" target="_blank" rel="noopener">Instagram</a></li>`);
+  if(CONFIG.facebook) L.push(`<li><a href="${CONFIG.facebook}" target="_blank" rel="noopener">Facebook</a></li>`);
+  $("#links").innerHTML=L.join("");
+}
+
+function setLang(l){
+  lang=l; document.documentElement.lang=l;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{const v=T[l][el.dataset.i18n]; if(v) el.textContent=v;});
+  $("#langBtn").textContent = l==="fr"?"EN":"FR";
+  try{localStorage.setItem("40a-lang",l);}catch(e){}
+  $("#storyText").innerHTML = T[l].story.map(p=>`<p>${p}</p>`).join("");
+  $("#storyClose").setAttribute("aria-label", l==="fr"?"Fermer":"Close");
+  renderHours(); renderLinks();
+}
+
+/* Notre histoire : ouvrir / fermer */
+function story(open){
+  $("#story").classList.toggle("open",open); $("#story").setAttribute("aria-hidden",!open);
+  $("#storyBtn").classList.toggle("active",open);
+  if(open){ $("#story").scrollTop=0; $("#story").focus({preventScroll:true}); }
+}
+$("#storyBtn").addEventListener("click",e=>{e.preventDefault(); story(!$("#story").classList.contains("open"));});
+$("#storyClose").addEventListener("click",()=>story(false));
+addEventListener("keydown",e=>{ if(e.key==="Escape") story(false); });
+
+/* Liens */
+document.querySelectorAll(".js-libro").forEach(a=>a.href=CONFIG.libroUrl);
+document.querySelectorAll(".js-airbnb").forEach(a=>a.href=CONFIG.airbnbUrl);
+document.querySelectorAll(".js-map").forEach(a=>a.href=CONFIG.mapsUrl);
+$(".js-address").textContent=CONFIG.address;
+
+/* Photos / diaporama — n'affiche que les images qui existent */
+(function(){
+  const box=$("#photo"), ok=[];
+  let pending=CONFIG.photos.length;
+  CONFIG.photos.forEach((src,i)=>{
+    const img=new Image(); img.alt="";
+    img.onload=()=>{ ok[i]=img; done(); }; img.onerror=done; img.src=src;
+  });
+  function done(){
+    if(--pending) return;
+    const imgs=ok.filter(Boolean); if(!imgs.length) return;
+    box.classList.add("has-img"); imgs.forEach(im=>box.appendChild(im));
+    let k=0; imgs[0].classList.add("on");
+    if(imgs.length>1) setInterval(()=>{ imgs[k].classList.remove("on"); k=(k+1)%imgs.length; imgs[k].classList.add("on"); }, CONFIG.slideSeconds*1000);
+  }
+})();
+
+/* Horaire : hours.json (mis à jour chaque jour à midi depuis Google) */
+async function loadGoogle(){
+  try{
+    const r=await fetch("hours.json",{cache:"no-cache"}); if(!r.ok) return;
+    const j=await r.json();
+    if(j && j.days && Object.keys(j.days).length===7){ H={days:j.days}; renderHours(); }
+  }catch(e){ /* pas de hours.json : horaire de secours */ }
+}
+
+$("#langBtn").addEventListener("click",()=>setLang(lang==="fr"?"en":"fr"));
+setLang(lang);
+loadGoogle();
+setInterval(renderHours,60000); // met à jour « ouvert / fermé » chaque minute
+</script>
+</body>
+</html>

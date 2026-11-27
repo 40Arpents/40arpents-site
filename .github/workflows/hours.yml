@@ -1,0 +1,28 @@
+# Met à jour hours.json chaque jour à midi (heure de l'Est) à partir de la fiche Google.
+name: Horaire Google
+
+on:
+  schedule:
+    - cron: "0 17 * * *"   # 17 h UTC = midi HNE (13 h à l'heure d'été)
+  workflow_dispatch:       # bouton « Run workflow » pour forcer une mise à jour
+
+permissions:
+  contents: write
+
+jobs:
+  hours:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/update-hours.mjs
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      - name: Enregistrer
+        run: |
+          git config user.name "horaire-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add hours.json
+          git diff --cached --quiet || (git commit -m "Horaire Google mis à jour" && git push)
