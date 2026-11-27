@@ -103,7 +103,14 @@ a:hover{color:var(--accent)}
 .hours .note{opacity:.6;margin-top:2px}
 .links a{text-decoration:none}
 .links a:hover{text-decoration:underline}
-.copy{opacity:.6;white-space:nowrap}
+.copy{white-space:nowrap;text-align:right}
+.copy{color:rgba(27,27,25,.6)}
+.credit{display:block;font-size:11px;margin-bottom:3px}
+.credit a{color:inherit;text-decoration:underline}
+.credit a:hover{color:var(--accent)}
+.quote{margin-top:2em;padding-left:16px;border-left:1px solid var(--ink);max-width:46ch}
+.quote p{font-size:13px !important;font-style:italic;line-height:1.55;margin-bottom:.5em !important}
+.quote cite{font-size:12px;font-style:normal;opacity:.7}
 
 /* =========================================================
    MOBILE / TABLETTE : on empile, le défilement est normal
@@ -164,7 +171,7 @@ a:hover{color:var(--accent)}
         <div id="hours"></div>
       </div>
       <ul class="links" id="links"></ul>
-      <span class="copy">© 40 Arpents</span>
+      <span class="copy"><span class="credit"><span id="creditLbl">Crédit</span> <a href="https://www.instagram.com/loikwax/" target="_blank" rel="noopener">loikwax</a></span>© 40 Arpents</span>
     </div>
   </section>
 
@@ -206,11 +213,12 @@ const T = {
     n0:"Notre projet", n1:"Dormir sur la ferme · Airbnb", n2:"Itinéraire", book:"Réserver une table", story_h:"Notre projet",
     /* ↓ Texte provisoire — remplacez par votre histoire (un paragraphe par ligne du tableau) */
     story:[
-      "40 Arpents, c'est d'abord une terre familiale au cœur du Kamouraska, entre les champs et le 4e Rang.",
-      "On y cultive, on y élève et on y cuisine. Ce qui pousse ici et chez nos voisins producteurs se retrouve directement dans l'assiette, au rythme des saisons.",
-      "La ferme-buvette est née de l'envie de partager tout ça autour d'une même table : une vingtaine de places, une cuisine simple et généreuse, et une carte des vins choisie bouteille par bouteille.",
-      "Pour celles et ceux qui veulent prolonger la soirée, le gîte sur place permet de dormir à la ferme et de se réveiller dans le calme de la campagne."
+      "40 Arpents n'est pas seulement un restaurant, c'est un acte de résistance contre l'agriculture industrielle. Un projet qui nourrit le beau, la communauté, la vie. On y vient pour la vérité de l'assiette et la cohérence du projet.",
+      "Le respect de l'environnement n'est pas un argument marketing, mais plutôt une nécessité pour le goût (dans l'assiette!) et la survie de notre ferme.",
+      "C'est le genre d'endroit où l'on se sent immédiatement à sa place."
     ],
+    quote:"La façon dont nous mangeons détermine, dans une grande mesure, l'usage que nous faisons du monde.",
+    quoteBy:"Wendell Berry", credit:"Crédit",
     about:"Il n'y a rien de plus frais qu'un repas cuisiné à l'endroit même où les ingrédients ont été cultivés. Chez 40 Arpents, nous proposons une réelle expérience de la ferme à l'assiette. Menu à l'ardoise conçu quelques jours à l'avance selon les produits disponibles à la ferme. Magnifique sélection de vins natures en importation privée, cidres et bières en accord avec nos valeurs. Ambiance festive!",
     ph:"Photo — images/photo-1.jpg",
     days:["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"],
@@ -222,11 +230,12 @@ const T = {
   en:{
     n0:"Our project", n1:"Stay at the farm · Airbnb", n2:"Directions", book:"Book a table", story_h:"Our project",
     story:[
-      "40 Arpents is first and foremost a family farm in the heart of Kamouraska, between the fields and the 4e Rang.",
-      "We grow, raise and cook here. What comes from our land and from neighbouring growers goes straight to the plate, following the seasons.",
-      "The farm buvette grew out of a wish to share all of this around one table: about twenty seats, simple and generous cooking, and a wine list chosen bottle by bottle.",
-      "For those who want to make a night of it, our on-site guesthouse lets you sleep at the farm and wake up to the quiet of the countryside."
+      "40 Arpents isn't just a restaurant — it's an act of resistance against industrial agriculture. A project that nurtures beauty, community and life. People come for the honesty of the plate and the coherence of the project.",
+      "Respect for the environment isn't a marketing pitch; it's a necessity for flavour (on the plate!) and for the survival of our farm.",
+      "It's the kind of place where you immediately feel at home."
     ],
+    quote:"How we eat determines, to a considerable extent, how the world is used.",
+    quoteBy:"Wendell Berry", credit:"Credit",
     about:"There's nothing fresher than a meal cooked right where its ingredients were grown. At 40 Arpents, we offer a true farm-to-table experience. Our chalkboard menu is written a few days ahead, based on what the farm has to offer. A beautiful selection of private-import natural wines, plus ciders and beers that reflect our values. Festive atmosphere!",
     ph:"Photo — images/photo-1.jpg",
     days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
@@ -314,7 +323,9 @@ function setLang(l){
   document.querySelectorAll("[data-i18n]").forEach(el=>{const v=T[l][el.dataset.i18n]; if(v) el.textContent=v;});
   $("#langBtn").textContent = l==="fr"?"EN":"FR";
   try{localStorage.setItem("40a-lang",l);}catch(e){}
-  $("#storyText").innerHTML = T[l].story.map(p=>`<p>${p}</p>`).join("");
+  $("#storyText").innerHTML = T[l].story.map(p=>`<p>${p}</p>`).join("") +
+    `<blockquote class="quote"><p>« ${T[l].quote} »</p><cite>— ${T[l].quoteBy}</cite></blockquote>`;
+  $("#creditLbl").textContent = T[l].credit;
   $("#storyClose").setAttribute("aria-label", l==="fr"?"Fermer":"Close");
   renderHours(); renderLinks();
 }
