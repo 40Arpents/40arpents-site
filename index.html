@@ -76,6 +76,17 @@ a:hover{color:var(--accent)}
 .story-close:hover{color:var(--accent)}
 .nav a.active{background:var(--ink);color:var(--bg)}
 
+/* Visionneuse photo (mobile) */
+.viewer{position:fixed;inset:0;z-index:50;background:#0e0e0d;display:none;align-items:center;justify-content:center;touch-action:none}
+.viewer.open{display:flex}
+.viewer img{max-width:100%;max-height:100%;max-height:100svh;object-fit:contain;user-select:none;-webkit-user-drag:none;transition:opacity .2s}
+.v-btn{position:absolute;background:none;border:0;color:#f3eee4;font:300 34px/1 var(--mono);cursor:pointer;padding:14px}
+.v-close{top:max(6px,env(safe-area-inset-top));right:6px}
+.v-prev{left:0;top:50%;transform:translateY(-50%);font-size:44px}
+.v-next{right:0;top:50%;transform:translateY(-50%);font-size:44px}
+.v-count{position:absolute;bottom:max(16px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;color:#f3eee4;opacity:.7;font:500 12px var(--mono);letter-spacing:.08em}
+@media (max-width:900px){ .photo.has-img{cursor:zoom-in} }
+
 /* Indicateur « Horaire et infos ↓ » (mobile seulement) */
 .more{display:none;position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:3;align-items:center;gap:6px;
   background:var(--bg);color:var(--ink);text-decoration:none;font:500 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;
@@ -198,6 +209,15 @@ a:hover{color:var(--accent)}
   </section>
 
 </main>
+
+<!-- ============ VISIONNEUSE PHOTO (mobile) ============ -->
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-hidden="true">
+  <img id="vImg" alt="">
+  <button class="v-btn v-close" id="vClose" type="button" aria-label="Fermer">×</button>
+  <button class="v-btn v-prev" id="vPrev" type="button" aria-label="Précédente">‹</button>
+  <button class="v-btn v-next" id="vNext" type="button" aria-label="Suivante">›</button>
+  <span class="v-count" id="vCount"></span>
+</div>
 
 <script>
 /* =========================================================
@@ -373,6 +393,7 @@ $(".js-address").textContent=CONFIG.address;
   const box=$("#photo"), list=CONFIG.photos.slice();
   for(let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
   const shown=[]; let cur=null, next=null, idx=0;
+  window.PH={list, paused:false, current:()=>cur?list.indexOf(cur.getAttribute("src")):0};
   function load(){                       // charge la prochaine photo valide de la liste
     return new Promise(res=>{
       (function tryNext(){
@@ -388,7 +409,7 @@ $(".js-address").textContent=CONFIG.address;
     if(!first) return;
     box.classList.add("has-img"); swap(first);
     next=load();                         // précharge la suivante pendant qu'on regarde
-    setInterval(async()=>{ const n=await next; swap(n); next=load(); }, CONFIG.slideSeconds*1000);
+    setInterval(async()=>{ if(PH.paused) return; const n=await next; swap(n); next=load(); }, CONFIG.slideSeconds*1000);
   });
 })();
 
@@ -402,8 +423,30 @@ async function loadGoogle(){
 }
 
 /* Indicateur mobile : défilement doux vers les infos, disparaît une fois qu'on descend */
-$("#more").addEventListener("click",e=>{e.preventDefault(); $("#infos").scrollIntoView({behavior:"smooth",block:"start"});});
+$("#more").addEventListener("click",e=>{e.preventDefault(); e.stopPropagation(); $("#infos").scrollIntoView({behavior:"smooth",block:"start"});});
 addEventListener("scroll",()=>$("#more").classList.toggle("hide",scrollY>60),{passive:true});
+
+/* Visionneuse : toucher la photo sur mobile pour la voir en grand, glisser pour changer */
+(function(){
+  const v=$("#viewer"), img=$("#vImg"), mobile=matchMedia("(max-width:900px)");
+  let i=0, x0=null;
+  const show=k=>{ const L=PH.list; i=(k+L.length)%L.length; img.style.opacity=0;
+    img.onload=()=>img.style.opacity=1; img.onerror=()=>step(1); img.src=L[i]; $("#vCount").textContent=`${i+1} / ${L.length}`; };
+  const step=d=>show(i+d);
+  function open(){ if(!window.PH) return; PH.paused=true; v.classList.add("open"); v.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden"; show(Math.max(0,PH.current())); }
+  function close(){ PH.paused=false; v.classList.remove("open"); v.setAttribute("aria-hidden","true"); document.body.style.overflow=""; }
+  $("#photo").addEventListener("click",()=>{ if(mobile.matches && $("#photo").classList.contains("has-img")) open(); });
+  $("#vClose").addEventListener("click",close);
+  $("#vPrev").addEventListener("click",e=>{e.stopPropagation(); step(-1);});
+  $("#vNext").addEventListener("click",e=>{e.stopPropagation(); step(1);});
+  v.addEventListener("click",e=>{ if(e.target===v) close(); });
+  v.addEventListener("touchstart",e=>{ x0=e.touches[0].clientX; },{passive:true});
+  v.addEventListener("touchend",e=>{ if(x0===null) return; const dx=e.changedTouches[0].clientX-x0; x0=null;
+    if(Math.abs(dx)>45) step(dx<0?1:-1); },{passive:true});
+  addEventListener("keydown",e=>{ if(!v.classList.contains("open")) return;
+    if(e.key==="ArrowRight") step(1); if(e.key==="ArrowLeft") step(-1); if(e.key==="Escape") close(); });
+})();
 
 $("#langBtn").addEventListener("click",()=>setLang(lang==="fr"?"en":"fr"));
 setLang(lang);
