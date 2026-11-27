@@ -183,8 +183,10 @@ const CONFIG = {
   phone:     "",                            // laissez "" pour masquer
   address:   "49, 4e Rang Ouest, Saint-Onésime-d'Ixworth (QC)  G0R 3W0",
 
-  /* Photos de gauche : une seule = image fixe; plusieurs = diaporama en fondu */
-  photos: ["images/photo-1.jpg","images/photo-2.jpg","images/photo-3.jpg"],
+  /* Photos de gauche : diaporama en fondu, dans un ordre aléatoire à chaque visite */
+  photos: ["images/photo-01.jpg","images/photo-02.jpg","images/photo-03.jpg","images/photo-04.jpg",
+           "images/photo-05.jpg","images/photo-06.jpg","images/photo-07.jpg","images/photo-08.jpg",
+           "images/photo-09.jpg","images/photo-10.jpg","images/photo-11.jpg","images/photo-12.jpg"],
   slideSeconds: 6,
 
   /* --- Synchronisation Google Business ---
@@ -335,21 +337,28 @@ document.querySelectorAll(".js-airbnb").forEach(a=>a.href=CONFIG.airbnbUrl);
 document.querySelectorAll(".js-map").forEach(a=>a.href=CONFIG.mapsUrl);
 $(".js-address").textContent=CONFIG.address;
 
-/* Photos / diaporama — n'affiche que les images qui existent */
+/* Photos / diaporama — ordre aléatoire à chaque visite, chargement une à la fois */
 (function(){
-  const box=$("#photo"), ok=[];
-  let pending=CONFIG.photos.length;
-  CONFIG.photos.forEach((src,i)=>{
-    const img=new Image(); img.alt="";
-    img.onload=()=>{ ok[i]=img; done(); }; img.onerror=done; img.src=src;
-  });
-  function done(){
-    if(--pending) return;
-    const imgs=ok.filter(Boolean); if(!imgs.length) return;
-    box.classList.add("has-img"); imgs.forEach(im=>box.appendChild(im));
-    let k=0; imgs[0].classList.add("on");
-    if(imgs.length>1) setInterval(()=>{ imgs[k].classList.remove("on"); k=(k+1)%imgs.length; imgs[k].classList.add("on"); }, CONFIG.slideSeconds*1000);
+  const box=$("#photo"), list=CONFIG.photos.slice();
+  for(let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
+  const shown=[]; let cur=null, next=null, idx=0;
+  function load(){                       // charge la prochaine photo valide de la liste
+    return new Promise(res=>{
+      (function tryNext(){
+        if(idx>=list.length){ if(!shown.length) return res(null); idx=0; return res(shown[(shown.indexOf(cur)+1)%shown.length]); }
+        const img=new Image(); img.alt=""; img.decoding="async";
+        img.onload=()=>{ shown.push(img); box.appendChild(img); res(img); };
+        img.onerror=tryNext; img.src=list[idx++];
+      })();
+    });
   }
+  function swap(img){ if(!img||img===cur) return; img.classList.add("on"); if(cur) cur.classList.remove("on"); cur=img; }
+  load().then(first=>{
+    if(!first) return;
+    box.classList.add("has-img"); swap(first);
+    next=load();                         // précharge la suivante pendant qu'on regarde
+    setInterval(async()=>{ const n=await next; swap(n); next=load(); }, CONFIG.slideSeconds*1000);
+  });
 })();
 
 /* Horaire : hours.json (mis à jour chaque jour à midi depuis Google) */
