@@ -184,9 +184,7 @@ const CONFIG = {
   address:   "49, 4e Rang Ouest, Saint-Onésime-d'Ixworth (QC)  G0R 3W0",
 
   /* Photos de gauche : diaporama en fondu, dans un ordre aléatoire à chaque visite */
-  photos: ["images/photo-01.jpg","images/photo-02.jpg","images/photo-03.jpg","images/photo-04.jpg",
-           "images/photo-05.jpg","images/photo-06.jpg","images/photo-07.jpg","images/photo-08.jpg",
-           "images/photo-09.jpg","images/photo-10.jpg","images/photo-11.jpg","images/photo-12.jpg"],
+  photos: Array.from({length:20}, (_,i)=>`images/photo-${String(i+1).padStart(2,"0")}.jpg`),
   slideSeconds: 6,
 
   /* --- Synchronisation Google Business ---
