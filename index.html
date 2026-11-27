@@ -90,12 +90,12 @@ a:hover{color:var(--accent)}
    ========================================================= */
 .body{display:flex;flex-direction:column;justify-content:flex-end;padding-top:24px}
 .about{font-size:clamp(15px,1.45vw,19px);line-height:1.38;margin-bottom:16px;max-width:46ch}
-.addr{border-top:1px solid var(--ink);padding:8px 0 10px;font-size:13px}
+.addr{border-top:1px solid var(--ink);padding:8px 0 10px;font-size:14.5px}
 .addr a{text-decoration:none}
-.info{display:grid;grid-template-columns:1.4fr 1fr auto;gap:18px;font-size:13px;align-items:end}
+.info{display:grid;grid-template-columns:1.4fr 1fr auto;gap:20px;font-size:14.5px;align-items:end}
 .info ul{list-style:none}
 .status{display:flex;align-items:center;gap:7px;margin-bottom:6px}
-.status i{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
 .status.open i{background:#4c7a37}
 #hours > div{display:flex;flex-wrap:wrap;column-gap:10px}
 .hours .d{min-width:0}
@@ -185,7 +185,7 @@ const CONFIG = {
 
   /* Photos de gauche : diaporama en fondu, dans un ordre aléatoire à chaque visite */
   photos: Array.from({length:19}, (_,i)=>`images/photo-${String(i+1).padStart(2,"0")}.jpg`),
-  slideSeconds: 6,
+  slideSeconds: 4,
 
   /* --- Synchronisation Google Business ---
      L'horaire est lu dans hours.json, que GitHub met à jour chaque jour à midi
